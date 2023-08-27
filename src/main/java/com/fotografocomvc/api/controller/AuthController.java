@@ -1,5 +1,6 @@
 package com.fotografocomvc.api.controller;
 
+import com.fotografocomvc.api.http.resources.request.LoginRequest;
 import com.fotografocomvc.api.http.resources.request.RegisterRequest;
 import com.fotografocomvc.domain.model.BaseUser;
 import com.fotografocomvc.domain.model.Role;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +36,17 @@ public class AuthController {
         this.baseUserRepository = baseUserRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @PostMapping("login")
+    private ResponseEntity<String> login (@RequestBody LoginRequest loginRequest){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(),loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return new ResponseEntity<>("User logged in successfully", HttpStatus.OK);
+
     }
 
     @PostMapping("register")

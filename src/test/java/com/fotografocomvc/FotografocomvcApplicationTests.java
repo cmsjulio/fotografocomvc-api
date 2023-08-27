@@ -24,7 +24,7 @@ class FotografocomvcApplicationTests {
 	void contextLoads() {
 		BaseUser baseUser = BaseUser.builder()
 				.id(1L)
-				.email("email")
+				.username("email")
 				.password("password")
 				.build();
 

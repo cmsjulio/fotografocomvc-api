@@ -1,0 +1,10 @@
+services:
+  fotografocomvc-postgres:
+    image: postgres
+    container_name: fotografocomvc-postgres
+    environment:
+      POSTGRES_USER: fotografocomvc
+      POSTGRES_DB: fotografocomvc
+      POSTGRES_PASSWORD: fotografocomvc
+    ports:
+      - "5432:5432"

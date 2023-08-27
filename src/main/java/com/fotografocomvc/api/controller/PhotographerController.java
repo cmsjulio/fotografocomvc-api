@@ -8,6 +8,7 @@ import com.fotografocomvc.domain.service.PhotographerService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class PhotographerController {
         this.photographerMapper = photographerMapper;
     }
 
-    @Operation(tags = {"Inscrição"}, description = "Criar Inscricao")
+    @Operation(tags = {"Photographer"}, description = "Create photographer")
     @PostMapping
     @ResponseBody
     public ResponseEntity<PhotographerResponse> createPhotographer(@RequestBody @Valid PhotographerRequest photographerRequest) {

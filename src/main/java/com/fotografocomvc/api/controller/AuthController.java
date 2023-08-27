@@ -2,6 +2,8 @@ package com.fotografocomvc.api.controller;
 
 import com.fotografocomvc.api.http.resources.request.LoginRequest;
 import com.fotografocomvc.api.http.resources.request.RegisterRequest;
+import com.fotografocomvc.api.http.resources.response.AuthResponse;
+import com.fotografocomvc.api.security.JwtGenerator;
 import com.fotografocomvc.domain.model.BaseUser;
 import com.fotografocomvc.domain.model.Role;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
@@ -30,22 +32,27 @@ public class AuthController {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
+    private JwtGenerator jwtGenerator;
+
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
         this.baseUserRepository = baseUserRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtGenerator = jwtGenerator;
     }
 
     @PostMapping("login")
-    private ResponseEntity<String> login (@RequestBody LoginRequest loginRequest){
+    private ResponseEntity<AuthResponse> login (@RequestBody LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(),loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return new ResponseEntity<>("User logged in successfully", HttpStatus.OK);
+        String token = jwtGenerator.generateToken(authentication);
+
+        return new ResponseEntity<>(new AuthResponse(token), HttpStatus.OK);
 
     }
 

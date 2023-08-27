@@ -1,11 +1,13 @@
 package com.fotografocomvc.domain.model;
 
-import com.fotografocomvc.domain.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,16 +28,16 @@ public class BaseUser {
     @Column(name = "ST_PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "TP_ROLE")
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @OneToOne(mappedBy = "baseUser")
     private Photographer photographer;
 
     @OneToOne(mappedBy = "baseUser")
     private Customer customer;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "T_BASEUSER_ROLE", joinColumns = @JoinColumn(name = "FK_USER", referencedColumnName = "ID_BASEUSER"),
+            inverseJoinColumns = @JoinColumn(name = "FK_ROLE", referencedColumnName = "ID_ROLE"))
+    private List<Role> roles = new ArrayList<>();
     //OneToOne - Photographer (nullable=true)
 
 

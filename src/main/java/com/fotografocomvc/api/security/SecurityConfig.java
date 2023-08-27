@@ -1,7 +1,5 @@
 package com.fotografocomvc.api.security;
 
-import com.fotografocomvc.domain.model.BaseUser;
-import com.fotografocomvc.domain.model.enums.Role;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

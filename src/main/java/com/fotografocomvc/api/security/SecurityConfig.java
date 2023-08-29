@@ -37,7 +37,7 @@ public class SecurityConfig {
 
 
     private static final String[] PUBLIC_ACCESS = {
-            "/none/**",
+            "/image/**",
     };
 
     @Bean

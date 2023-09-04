@@ -1,26 +1,14 @@
 package com.fotografocomvc.domain.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Map;
-
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class NotFoundException extends RuntimeException {
-    private Map<String, Object> error;
+    private static final long serialVersionUID = -4047125885447907412L;
 
-    public NotFoundException(Map<String, Object> error) {
-        super("Not Found Exception");
-        this.error = error;
-    }
-
-    public NotFoundException(String msg) {
-        super(msg);
-    }
-
-
-    public Map<String, Object> getError() {
-        return error;
-    }
-
-    public void setError(Map<String, Object> error) {
-        this.error = error;
+    public NotFoundException(String message) {
+        super(String.format("Failed for [%s]: %s", message));
     }
 }

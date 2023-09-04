@@ -23,7 +23,7 @@ public class BaseUser {
     private Long id;
 
     @Column(name = "ST_USERNAME", nullable = false, unique = true)
-    private String username;
+    private String username; //email
 
     @Column(name = "ST_PASSWORD", nullable = false)
     private String password;

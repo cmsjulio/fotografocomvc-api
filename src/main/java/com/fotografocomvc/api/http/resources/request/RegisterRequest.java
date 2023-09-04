@@ -1,5 +1,6 @@
 package com.fotografocomvc.api.http.resources.request;
 
+import com.fotografocomvc.domain.model.enums.RolesAvaliable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,4 +14,5 @@ public class RegisterRequest {
 
     private String username;
     private String password;
+    private RolesAvaliable role;
 }

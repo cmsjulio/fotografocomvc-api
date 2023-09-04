@@ -7,5 +7,6 @@ public interface BaseUserService {
     BaseUser save(BaseUser baseUser);
     BaseUser findById(Long id);
     BaseUser update(BaseUser baseUser);
+    boolean existsByUsername(String username);
 
 }

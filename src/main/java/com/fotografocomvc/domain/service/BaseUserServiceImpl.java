@@ -30,4 +30,9 @@ public class BaseUserServiceImpl implements BaseUserService{
         baseUserRepository.save(baseUser);
         return baseUser;
     }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return baseUserRepository.existsByUsername(username);
+    }
 }

@@ -5,24 +5,27 @@ import com.fotografocomvc.domain.model.BaseUser;
 import com.fotografocomvc.domain.model.RefreshToken;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
 import com.fotografocomvc.domain.repository.RefreshTokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.fotografocomvc.api.security.SecurityConstants.REFRESH_TOKEN_EXPIRATION;
 
 @Service
-public class RefreshTokenService {
+public class RefreshTokenService implements TokenService<RefreshToken>{
 
-  @Autowired
-  private RefreshTokenRepository refreshTokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
-  @Autowired
-  private BaseUserRepository userRepository;
+  private final BaseUserRepository userRepository;
+
+  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, BaseUserRepository userRepository) {
+    this.refreshTokenRepository = refreshTokenRepository;
+    this.userRepository = userRepository;
+  }
 
   public Optional<RefreshToken> findByToken(String token) {
     return refreshTokenRepository.findByTokenString(token);
@@ -32,37 +35,40 @@ public class RefreshTokenService {
     return refreshTokenRepository.findByBaseUserId(baseUserId);
   }
 
-  public RefreshToken createRefreshToken(Long userId) {
-    RefreshToken refreshToken = new RefreshToken();
-
-    refreshToken.setBaseUser(userRepository.findById(userId).get());
-    refreshToken.setExpiryDate(Instant.now().plusMillis(REFRESH_TOKEN_EXPIRATION));
-    refreshToken.setTokenString(UUID.randomUUID().toString());
-
-    refreshToken = refreshTokenRepository.save(refreshToken);
-    return refreshToken;
+  public RefreshToken createToken(RefreshToken refreshToken) {
+    return refreshTokenRepository.save(refreshToken);
   }
 
-  public RefreshToken verifyExpiration(RefreshToken token) {
-    if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
-      refreshTokenRepository.delete(token);
-      throw new TokenRefreshException(token.getTokenString(), "Refresh token was expired. Please make a new signin request");
-    }
-    return token;
+  @Override
+  public RefreshToken verifyExpiration(RefreshToken tokenEntity) {
+    return tokenEntity;
   }
 
-  public boolean verifyExpirationBoolean(RefreshToken token){
-    if (token.getExpiryDate().compareTo(Instant.now()) < 0){
-      return true;
-    }
-    else {
-      return false;
-    }
+  @Override
+  public boolean verifyExpirationBoolean(RefreshToken token) {
+    return false;
   }
+
+//  public RefreshToken verifyExpiration(RefreshToken token) {
+//    if (token.getExpiryDate().compareTo(Date.from(Instant.now())) < 0) { //verificar, pois agora usando DATE!=INSTANT
+//      refreshTokenRepository.delete(token);
+//      throw new TokenRefreshException(token.getTokenString(), "Refresh token was expired. Please make a new signin request");
+//    }
+//    return token;
+//  }
+//
+//  public boolean verifyExpirationBoolean(RefreshToken token){ //verificar, pois agora usando DATE!=INSTANT
+//    if (token.getExpiryDate().compareTo(Date.from(Instant.now())) < 0){
+//      return true;
+//    }
+//    else {
+//      return false;
+//    }
+//  }
 
   @Transactional
-  public int deleteByUserId(Long userId) {
-    return refreshTokenRepository.deleteByBaseUser(userRepository.findById(userId).get());
+  public void deleteByUserId(Long userId) {
+    refreshTokenRepository.deleteByBaseUser(userRepository.findById(userId).get());
   }
 
   public void delete(RefreshToken token){
@@ -78,7 +84,7 @@ public class RefreshTokenService {
     return false;
   }
 
-  public boolean checkIfUserHasRefreshToken(BaseUser baseUser){
+  public boolean checkIfUserHasToken(BaseUser baseUser){
     return refreshTokenRepository.existsByBaseUser(baseUser);
   }
 }

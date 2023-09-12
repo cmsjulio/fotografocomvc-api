@@ -169,29 +169,20 @@ public class AuthController {
 
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+        // TODO checar validação, apagar token atual e gerar novo
         String requestRefreshToken = request.getRefreshToken();
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getBaseUser)
                 .map(user -> {
-                    String token = jwtGenerator.generateTokenByEmail(user.getUsername());
+                    String token = jwtManager.generateTokenByEmail(user.getUsername(), ACCESS_TOKEN_EXPIRATION);
                     return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
                         "Refresh token is not in database!"));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String username = userDetails.getUsername();
-
-        refreshTokenService.deleteByUserId(baseUserRepository.findByUsername(username).get().getId());
-        return ResponseEntity.ok("Log out successful!" + username);
-    }
 }
 
 

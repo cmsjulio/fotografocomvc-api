@@ -40,5 +40,14 @@ public class BaseUser {
     private List<Role> roles = new ArrayList<>();
     //OneToOne - Photographer (nullable=true)
 
+    // TODO many to one com os tokens? considerar
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "FK_ACCESS_TOKEN", referencedColumnName = "ID_ACCESS_TOKEN")
+    private AccessToken accessToken;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "FK_REFRESH_TOKEN", referencedColumnName = "ID_REFRESH_TOKEN")
+    private RefreshToken refreshToken;
+
 
 }

@@ -6,6 +6,8 @@ import com.fotografocomvc.domain.repository.BaseUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class BaseUserServiceImpl implements BaseUserService{
@@ -34,5 +36,10 @@ public class BaseUserServiceImpl implements BaseUserService{
     @Override
     public boolean existsByUsername(String username) {
         return baseUserRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Optional<BaseUser> findByUsername(String email) {
+        return baseUserRepository.findByUsername(email);
     }
 }

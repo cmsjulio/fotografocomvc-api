@@ -5,7 +5,7 @@ import com.fotografocomvc.api.http.resources.response.AuthResponse;
 import com.fotografocomvc.api.http.resources.response.RegisterCustomerResponse;
 import com.fotografocomvc.api.http.resources.response.RegisterPhotographerResponse;
 import com.fotografocomvc.api.http.resources.response.TokenRefreshResponse;
-import com.fotografocomvc.api.security.JwtGenerator;
+import com.fotografocomvc.api.security.JwtManager;
 import com.fotografocomvc.core.mapper.CustomerMapper;
 import com.fotografocomvc.core.mapper.PhotographerMapper;
 import com.fotografocomvc.domain.exception.BusinessException;
@@ -13,10 +13,7 @@ import com.fotografocomvc.domain.exception.TokenRefreshException;
 import com.fotografocomvc.domain.model.*;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
 import com.fotografocomvc.domain.repository.RoleRepository;
-import com.fotografocomvc.domain.service.BaseUserService;
-import com.fotografocomvc.domain.service.CustomerService;
-import com.fotografocomvc.domain.service.PhotographerService;
-import com.fotografocomvc.domain.service.RefreshTokenService;
+import com.fotografocomvc.domain.service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import static com.fotografocomvc.api.security.SecurityConstants.ACCESS_TOKEN_EXPIRATION;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -43,7 +42,7 @@ public class AuthController {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
-    private JwtGenerator jwtGenerator;
+    private JwtManager jwtManager;
 
     private RefreshTokenService refreshTokenService;
 
@@ -55,18 +54,21 @@ public class AuthController {
 
     private final CustomerMapper customerMapper;
 
+    private final AccessTokenService accessTokenService;
+
     private final PhotographerMapper photographerMapper;
-    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtGenerator jwtGenerator, RefreshTokenService refreshTokenService, BaseUserService baseUserService, CustomerService customerService, PhotographerService photographerService, CustomerMapper customerMapper, PhotographerMapper photographerMapper) {
+    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtManager jwtManager, RefreshTokenService refreshTokenService, BaseUserService baseUserService, CustomerService customerService, PhotographerService photographerService, CustomerMapper customerMapper, AccessTokenService accessTokenService, PhotographerMapper photographerMapper) {
         this.authenticationManager = authenticationManager;
         this.baseUserRepository = baseUserRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtGenerator = jwtGenerator;
+        this.jwtManager = jwtManager;
         this.refreshTokenService = refreshTokenService;
         this.baseUserService = baseUserService;
         this.customerService = customerService;
         this.photographerService = photographerService;
         this.customerMapper = customerMapper;
+        this.accessTokenService = accessTokenService;
         this.photographerMapper = photographerMapper;
     }
 
@@ -74,33 +76,34 @@ public class AuthController {
     private ResponseEntity<AuthResponse> login (@RequestBody LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(),loginRequest.getPassword()));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        BaseUser baseUser = baseUserRepository.findByUsername(userDetails.getUsername()).get();
-        String token = jwtGenerator.generateToken(authentication);
+        BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
+        // TODO excluir tokens do usuário se existirem AQUI NESTA LINHA
 
+        AccessToken accessToken = AccessToken.builder()
+                .tokenString(jwtManager.generateAccessJWT(authentication))
+                .baseUser(baseUser)
+                .build();
+        accessTokenService.createToken(accessToken);
 
+        RefreshToken refreshToken = RefreshToken.builder()
+                        .tokenString(jwtManager.generateRefreshJWT(authentication))
+                        .baseUser(baseUser)
+                        .build();
+        refreshTokenService.createToken(refreshToken);
+
+        baseUser.setAccessToken(accessToken);
+        baseUser.setRefreshToken(refreshToken);
+        baseUserService.update(baseUser);
+
+        // TODO refatorar AuthResponse
         AuthResponse authResponse = new AuthResponse();
         authResponse.setEmail(baseUser.getUsername());
-        authResponse.setAccessToken(token);
+        authResponse.setAccessToken(accessToken.getTokenString());
+        authResponse.setRefreshToken(refreshToken.getTokenString());
         authResponse.setRoles(baseUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
 
-
-        if (refreshTokenService.checkIfUserHasRefreshToken(baseUser)){
-            RefreshToken savedRefreshToken = refreshTokenService.findByBaseUserId(baseUser.getId()).get();
-            if (refreshTokenService.verifyExpirationBoolean(savedRefreshToken)){
-                refreshTokenService.delete(savedRefreshToken);
-                RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(baseUser.getId());
-                authResponse.setRefreshToken(newRefreshToken.getTokenString());
-            }
-            else {
-                authResponse.setRefreshToken(savedRefreshToken.getTokenString());
-            }
-        } else {
-            RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(baseUser.getId());
-            authResponse.setRefreshToken(newRefreshToken.getTokenString());
-        }
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
 

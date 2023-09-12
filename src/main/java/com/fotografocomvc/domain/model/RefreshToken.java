@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Builder
@@ -17,17 +18,18 @@ import java.time.Instant;
 public class RefreshToken {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(name = "ID_REFRESH_TOKEN")
   private long id;
 
-  @OneToOne
-  @JoinColumn(name = "FK_BASEUSER", referencedColumnName = "ID_BASEUSER")
+  @OneToOne(mappedBy = "refreshToken")
   private BaseUser baseUser;
 
   @Column(nullable = false, unique = true)
   private String tokenString;
 
-  @Column(nullable = false)
-  private Instant expiryDate;
+  public boolean isRevoked;
+
+  public boolean isExpired;
 
 
 }

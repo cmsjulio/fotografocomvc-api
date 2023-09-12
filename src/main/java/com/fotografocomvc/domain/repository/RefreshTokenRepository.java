@@ -13,10 +13,12 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
   Optional<RefreshToken> findByTokenString(String token);
 
   @Modifying
-  int deleteByBaseUser(BaseUser user);
+  void deleteByBaseUser(BaseUser user);
 
   boolean existsByBaseUser(BaseUser baseUser);
 
   Optional<RefreshToken> findByBaseUserId(Long baseUserId);
 
+  // TODO implementar no serviço para limpeza dos tokens? fazer o mesmo o accessToken
+  void deleteAllByBaseUserId(Long baseUserId);
 }

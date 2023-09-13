@@ -38,9 +38,7 @@ public class BaseUser {
     @JoinTable(name = "T_BASEUSER_ROLE", joinColumns = @JoinColumn(name = "FK_USER", referencedColumnName = "ID_BASEUSER"),
             inverseJoinColumns = @JoinColumn(name = "FK_ROLE", referencedColumnName = "ID_ROLE"))
     private List<Role> roles = new ArrayList<>();
-    //OneToOne - Photographer (nullable=true)
 
-    // TODO many to one com os tokens? considerar
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "FK_ACCESS_TOKEN", referencedColumnName = "ID_ACCESS_TOKEN")
     private AccessToken accessToken;

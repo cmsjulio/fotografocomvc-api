@@ -13,8 +13,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 
-import static com.fotografocomvc.api.security.SecurityConstants.ACCESS_TOKEN_EXPIRATION;
-import static com.fotografocomvc.api.security.SecurityConstants.REFRESH_TOKEN_EXPIRATION;
+import static com.fotografocomvc.api.security.SecurityConstants.*;
 
 @Service
 public class JwtManager {
@@ -36,7 +35,7 @@ public class JwtManager {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expiredDate)
-                .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET)
+                .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
                 .compact();
     }
 
@@ -48,13 +47,13 @@ public class JwtManager {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(expiredDate)
-                .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET)
+                .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
                 .compact();
     }
 
     public String getUserNameFromJwt(String token){
         Claims claims = Jwts.parser()
-                .setSigningKey(SecurityConstants.JWT_SECRET)
+                .setSigningKey(JWT_SECRET)
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
@@ -63,7 +62,7 @@ public class JwtManager {
     public boolean validateToken(String token){
         try{
             Jwts.parser()
-                    .setSigningKey(SecurityConstants.JWT_SECRET)
+                    .setSigningKey(JWT_SECRET)
                     .parseClaimsJws(token);
 
             return true;

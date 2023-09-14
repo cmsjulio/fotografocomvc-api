@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,6 +22,6 @@ public interface AccessTokenRepository extends JpaRepository<AccessToken, Long> 
   Optional<AccessToken> findByBaseUserId(Long baseUserId);
 
   // TODO implementar no serviço para limpeza dos tokens? fazer o mesmo o refreshToken
-  void deleteAllByBaseUserId(Long baseUserId);
+  List<AccessToken> findAllByBaseUserId(Long baseUserId);
 
 }

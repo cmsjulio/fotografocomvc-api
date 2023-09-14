@@ -4,6 +4,7 @@ import com.fotografocomvc.domain.model.BaseUser;
 import com.fotografocomvc.domain.model.Customer;
 import com.fotografocomvc.domain.model.RefreshToken;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TokenService<E> {
@@ -16,5 +17,6 @@ public interface TokenService<E> {
     void deleteByUserId(Long userId);
     boolean checkIfUserHasToken(BaseUser baseUser);
     void delete(E tokenEntity);
+    List<E> findAllByBaseUserId(Long baseUserId);
 
 }

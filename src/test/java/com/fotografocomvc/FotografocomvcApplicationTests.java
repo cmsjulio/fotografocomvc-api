@@ -1,15 +1,13 @@
 package com.fotografocomvc;
 
-import com.fotografocomvc.domain.model.BaseUser;
+import com.fotografocomvc.domain.model.*;
 import com.fotografocomvc.domain.model.Image;
-import com.fotografocomvc.domain.model.Photographer;
-import com.fotografocomvc.domain.repository.BaseUserRepository;
-import com.fotografocomvc.domain.repository.ImageRepository;
-import com.fotografocomvc.domain.repository.PhotographerRepository;
+import com.fotografocomvc.domain.repository.*;
 import com.fotografocomvc.domain.util.ImageUtility;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -35,6 +34,11 @@ class FotografocomvcApplicationTests {
 	@Autowired
 	private ImageRepository imageRepository;
 
+	@Autowired
+	private AccessTokenRepository accessTokenRepository;
+
+	@Autowired
+	private RefreshTokenRepository refreshTokenRepository;
 	@Test
 	void contextLoads() throws IOException {
 
@@ -140,7 +144,60 @@ class FotografocomvcApplicationTests {
 	}
 
 	@Test
-	void writeFile(){
+	void clearTokens(){
+		BaseUser baseUser1 = BaseUser.builder()
+				.id(1L)
+				.username("tester1")
+				.password("123")
+				.build();
+
+		baseUserRepository.save(baseUser1);
+
+		BaseUser baseUser2 = BaseUser.builder()
+				.id(2L)
+				.username("tester2")
+				.password("321")
+				.build();
+
+		baseUserRepository.save(baseUser2);
+
+		RefreshToken refreshToken1 = RefreshToken.builder()
+				.id(1L)
+				.tokenString("refreshTokenString1")
+				.baseUser(baseUser1)
+				.build();
+
+		refreshTokenRepository.save(refreshToken1);
+
+		RefreshToken refreshToken2 = RefreshToken.builder()
+				.id(2L)
+				.tokenString("refreshTokenString2")
+				.baseUser(baseUser1)
+				.build();
+		refreshTokenRepository.save(refreshToken2);
+
+		RefreshToken refreshToken3 = RefreshToken.builder()
+				.id(3L)
+				.tokenString("refreshTokenString3")
+				.baseUser(baseUser2)
+				.build();
+		refreshTokenRepository.save(refreshToken3);
+
+		RefreshToken refreshToken4 = RefreshToken.builder()
+				.id(4L)
+				.tokenString("refreshTokenString4")
+				.build();
+		refreshTokenRepository.save(refreshToken4);
+
+		AccessToken accessToken1 = AccessToken.builder()
+				.id(1L)
+				.tokenString("accesTokenString1")
+				.baseUser(baseUser1)
+				.build();
+		accessTokenRepository.save(accessToken1);
+
+		List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUser1.getId());
+		refreshTokenRepository.deleteAll(refreshTokenList);
 
 	}
 

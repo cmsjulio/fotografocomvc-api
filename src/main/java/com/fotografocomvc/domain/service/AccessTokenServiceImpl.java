@@ -2,6 +2,7 @@ package com.fotografocomvc.domain.service;
 
 import com.fotografocomvc.domain.model.AccessToken;
 import com.fotografocomvc.domain.model.BaseUser;
+import com.fotografocomvc.domain.model.RefreshToken;
 import com.fotografocomvc.domain.repository.AccessTokenRepository;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,12 @@ public class AccessTokenServiceImpl implements TokenService<AccessToken>{
   @Override
   public List<AccessToken> findAllByBaseUserId(Long baseUserId) {
     return accessTokenRepository.findAllByBaseUserId(baseUserId);
+  }
+
+  @Override
+  public void deleteAllByUserId(Long baseUserId) {
+    List<AccessToken> accessTokenList = accessTokenRepository.findAllByBaseUserId(baseUserId);
+    accessTokenRepository.deleteAll(accessTokenList);
   }
 
   public boolean checkIfUserHasValidRefreshToken(Long userID){

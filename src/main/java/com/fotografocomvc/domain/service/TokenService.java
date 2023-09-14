@@ -19,4 +19,6 @@ public interface TokenService<E> {
     void delete(E tokenEntity);
     List<E> findAllByBaseUserId(Long baseUserId);
 
+    void deleteAllByUserId(Long baseUserId);
+
 }

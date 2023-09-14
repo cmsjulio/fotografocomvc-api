@@ -1,5 +1,6 @@
 package com.fotografocomvc.domain.service;
 
+import com.fotografocomvc.domain.model.AccessToken;
 import com.fotografocomvc.domain.model.BaseUser;
 import com.fotografocomvc.domain.model.RefreshToken;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
@@ -56,6 +57,12 @@ public class RefreshTokenServiceImpl implements TokenService<RefreshToken>{
   @Override
   public List<RefreshToken> findAllByBaseUserId(Long baseUserId) {
     return refreshTokenRepository.findAllByBaseUserId(baseUserId);
+  }
+
+  @Override
+  public void deleteAllByUserId(Long baseUserId) {
+    List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUserId);
+    refreshTokenRepository.deleteAll(refreshTokenList);
   }
 
   public boolean checkIfUserHasValidRefreshToken(Long userID){

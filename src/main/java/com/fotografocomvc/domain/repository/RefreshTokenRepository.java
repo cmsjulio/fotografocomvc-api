@@ -20,7 +20,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 
   Optional<RefreshToken> findByBaseUserId(Long baseUserId);
 
-  // TODO implementar no serviço para limpeza dos tokens? fazer o mesmo o accessToken
   List<RefreshToken> findAllByBaseUserId(Long baseUserId);
 
 }

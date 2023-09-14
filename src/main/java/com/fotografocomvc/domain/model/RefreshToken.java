@@ -21,7 +21,8 @@ public class RefreshToken {
   @Column(name = "ID_REFRESH_TOKEN")
   private long id;
 
-  @OneToOne(mappedBy = "refreshToken")
+  @ManyToOne
+  @JoinColumn(name = "FK_USER", referencedColumnName = "ID_BASEUSER")
   private BaseUser baseUser;
 
   @Column(nullable = false, unique = true)

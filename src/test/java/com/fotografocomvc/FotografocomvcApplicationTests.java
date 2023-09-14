@@ -3,6 +3,8 @@ package com.fotografocomvc;
 import com.fotografocomvc.domain.model.*;
 import com.fotografocomvc.domain.model.Image;
 import com.fotografocomvc.domain.repository.*;
+import com.fotografocomvc.domain.service.AccessTokenServiceImpl;
+import com.fotografocomvc.domain.service.RefreshTokenServiceImpl;
 import com.fotografocomvc.domain.util.ImageUtility;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,12 @@ class FotografocomvcApplicationTests {
 
 	@Autowired
 	private ImageRepository imageRepository;
+
+	@Autowired
+	private AccessTokenServiceImpl accessTokenService;
+
+	@Autowired
+	private RefreshTokenServiceImpl refreshTokenService;
 
 	@Autowired
 	private AccessTokenRepository accessTokenRepository;
@@ -196,8 +204,21 @@ class FotografocomvcApplicationTests {
 				.build();
 		accessTokenRepository.save(accessToken1);
 
-		List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUser1.getId());
-		refreshTokenRepository.deleteAll(refreshTokenList);
+		AccessToken accessToken2 = AccessToken.builder()
+				.id(2L)
+				.tokenString("accesTokenString2")
+				.baseUser(baseUser2)
+				.build();
+		accessTokenRepository.save(accessToken2);
+
+		accessTokenService.deleteAllByUserId(baseUser1.getId());
+		refreshTokenService.deleteAllByUserId(baseUser1.getId());
+
+		System.out.println("tsete");
+
+//		List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUser1.getId());
+//		refreshTokenRepository.deleteAll(refreshTokenList);
+
 
 	}
 

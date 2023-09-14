@@ -1,6 +1,5 @@
 package com.fotografocomvc.domain.service;
 
-import com.fotografocomvc.domain.exception.TokenRefreshException;
 import com.fotografocomvc.domain.model.BaseUser;
 import com.fotografocomvc.domain.model.RefreshToken;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
@@ -8,21 +7,17 @@ import com.fotografocomvc.domain.repository.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.Date;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
-import static com.fotografocomvc.api.security.SecurityConstants.REFRESH_TOKEN_EXPIRATION;
 
 @Service
-public class RefreshTokenService implements TokenService<RefreshToken>{
+public class RefreshTokenServiceImpl implements TokenService<RefreshToken>{
 
   private final RefreshTokenRepository refreshTokenRepository;
 
   private final BaseUserRepository userRepository;
 
-  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, BaseUserRepository userRepository) {
+  public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, BaseUserRepository userRepository) {
     this.refreshTokenRepository = refreshTokenRepository;
     this.userRepository = userRepository;
   }
@@ -49,23 +44,6 @@ public class RefreshTokenService implements TokenService<RefreshToken>{
     return false;
   }
 
-//  public RefreshToken verifyExpiration(RefreshToken token) {
-//    if (token.getExpiryDate().compareTo(Date.from(Instant.now())) < 0) { //verificar, pois agora usando DATE!=INSTANT
-//      refreshTokenRepository.delete(token);
-//      throw new TokenRefreshException(token.getTokenString(), "Refresh token was expired. Please make a new signin request");
-//    }
-//    return token;
-//  }
-//
-//  public boolean verifyExpirationBoolean(RefreshToken token){ //verificar, pois agora usando DATE!=INSTANT
-//    if (token.getExpiryDate().compareTo(Date.from(Instant.now())) < 0){
-//      return true;
-//    }
-//    else {
-//      return false;
-//    }
-//  }
-
   @Transactional
   public void deleteByUserId(Long userId) {
     refreshTokenRepository.deleteByBaseUser(userRepository.findById(userId).get());
@@ -73,6 +51,11 @@ public class RefreshTokenService implements TokenService<RefreshToken>{
 
   public void delete(RefreshToken token){
     refreshTokenRepository.delete(token);
+  }
+
+  @Override
+  public List<RefreshToken> findAllByBaseUserId(Long baseUserId) {
+    return refreshTokenRepository.findAllByBaseUserId(baseUserId);
   }
 
   public boolean checkIfUserHasValidRefreshToken(Long userID){

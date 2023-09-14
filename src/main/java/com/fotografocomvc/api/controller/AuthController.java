@@ -44,7 +44,7 @@ public class AuthController {
 
     private JwtManager jwtManager;
 
-    private RefreshTokenService refreshTokenService;
+    private RefreshTokenServiceImpl refreshTokenServiceImpl;
 
     private final BaseUserService baseUserService;
 
@@ -54,21 +54,21 @@ public class AuthController {
 
     private final CustomerMapper customerMapper;
 
-    private final AccessTokenService accessTokenService;
+    private final AccessTokenServiceImpl accessTokenServiceImpl;
 
     private final PhotographerMapper photographerMapper;
-    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtManager jwtManager, RefreshTokenService refreshTokenService, BaseUserService baseUserService, CustomerService customerService, PhotographerService photographerService, CustomerMapper customerMapper, AccessTokenService accessTokenService, PhotographerMapper photographerMapper) {
+    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtManager jwtManager, RefreshTokenServiceImpl refreshTokenServiceImpl, BaseUserService baseUserService, CustomerService customerService, PhotographerService photographerService, CustomerMapper customerMapper, AccessTokenServiceImpl accessTokenServiceImpl, PhotographerMapper photographerMapper) {
         this.authenticationManager = authenticationManager;
         this.baseUserRepository = baseUserRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtManager = jwtManager;
-        this.refreshTokenService = refreshTokenService;
+        this.refreshTokenServiceImpl = refreshTokenServiceImpl;
         this.baseUserService = baseUserService;
         this.customerService = customerService;
         this.photographerService = photographerService;
         this.customerMapper = customerMapper;
-        this.accessTokenService = accessTokenService;
+        this.accessTokenServiceImpl = accessTokenServiceImpl;
         this.photographerMapper = photographerMapper;
     }
 
@@ -85,17 +85,17 @@ public class AuthController {
                 .tokenString(jwtManager.generateAccessJWT(authentication))
                 .baseUser(baseUser)
                 .build();
-        accessTokenService.createToken(accessToken);
+        accessTokenServiceImpl.createToken(accessToken);
 
         RefreshToken refreshToken = RefreshToken.builder()
                         .tokenString(jwtManager.generateRefreshJWT(authentication))
                         .baseUser(baseUser)
                         .build();
-        refreshTokenService.createToken(refreshToken);
+        refreshTokenServiceImpl.createToken(refreshToken);
 
-        baseUser.setAccessToken(accessToken);
-        baseUser.setRefreshToken(refreshToken);
-        baseUserService.update(baseUser);
+//        baseUser.setAccessToken(accessToken);
+//        baseUser.setRefreshToken(refreshToken);
+//        baseUserService.update(baseUser);
 
         // TODO refatorar AuthResponse
         AuthResponse authResponse = new AuthResponse();
@@ -172,8 +172,8 @@ public class AuthController {
         // TODO checar validação, apagar token atual e gerar novo
         String requestRefreshToken = request.getRefreshToken();
 
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
+        return refreshTokenServiceImpl.findByToken(requestRefreshToken)
+                .map(refreshTokenServiceImpl::verifyExpiration)
                 .map(RefreshToken::getBaseUser)
                 .map(user -> {
                     String token = jwtManager.generateTokenByEmail(user.getUsername(), ACCESS_TOKEN_EXPIRATION);

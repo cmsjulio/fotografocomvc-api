@@ -39,13 +39,11 @@ public class BaseUser {
             inverseJoinColumns = @JoinColumn(name = "FK_ROLE", referencedColumnName = "ID_ROLE"))
     private List<Role> roles = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_ACCESS_TOKEN", referencedColumnName = "ID_ACCESS_TOKEN")
-    private AccessToken accessToken;
+    @OneToMany(mappedBy = "baseUser")
+    private List<AccessToken> accessToken;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "FK_REFRESH_TOKEN", referencedColumnName = "ID_REFRESH_TOKEN")
-    private RefreshToken refreshToken;
+    @OneToMany(mappedBy = "baseUser")
+    private List<RefreshToken> refreshToken;
 
 
 }

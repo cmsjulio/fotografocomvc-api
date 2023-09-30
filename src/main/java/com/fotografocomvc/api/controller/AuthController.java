@@ -80,6 +80,8 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
         // TODO excluir tokens do usuário se existirem AQUI NESTA LINHA
+        accessTokenServiceImpl.deleteAllByUserId(baseUser.getId());
+        refreshTokenServiceImpl.deleteAllByUserId(baseUser.getId());
 
         AccessToken accessToken = AccessToken.builder()
                 .tokenString(jwtManager.generateAccessJWT(authentication))

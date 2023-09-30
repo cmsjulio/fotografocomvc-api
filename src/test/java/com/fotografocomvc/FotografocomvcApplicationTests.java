@@ -214,7 +214,18 @@ class FotografocomvcApplicationTests {
 		accessTokenService.deleteAllByUserId(baseUser1.getId());
 		refreshTokenService.deleteAllByUserId(baseUser1.getId());
 
+		BaseUser baseUserX = BaseUser.builder()
+					.id(5L)
+					.username("tester5")
+					.password("123")
+					.build();
+		baseUserRepository.save(baseUserX);
+
+		accessTokenService.deleteAllByUserId(baseUserX.getId());
+		refreshTokenService.deleteAllByUserId(baseUserX.getId());
+
 		System.out.println("tsete");
+
 
 //		List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUser1.getId());
 //		refreshTokenRepository.deleteAll(refreshTokenList);

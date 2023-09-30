@@ -50,46 +50,46 @@ class FotografocomvcApplicationTests {
 	@Test
 	void contextLoads() throws IOException {
 
-//		File resultImageFile = new File("/tmp/fodase");
-//
-//		File origFile = new File("/tmp/source.png");
-//		ImageIcon icon = new ImageIcon(origFile.getPath());
-//
-//		// create BufferedImage object of same width and height as of original image
-//		BufferedImage bufferedImage = new BufferedImage(icon.getIconWidth(),
-//				icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-//
-//		// create graphics object and add original image to it
-//		Graphics graphics = bufferedImage.getGraphics();
-//		graphics.drawImage(icon.getImage(), 0, 0, null);
-//
-//		File watermarkImageFile = new File("/tmp/watermark.png");
-//		ImageIcon icon2 = new ImageIcon(watermarkImageFile.getPath());
-//
-//		// create BufferedImage object of same width and height as of original image
-//		BufferedImage bufferedImage2 = new BufferedImage(icon2.getIconWidth(),
-//				icon2.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-//
-//		// create graphics object and add original image to it
-//		Graphics graphics2 = bufferedImage2.getGraphics();
-//		graphics2.drawImage(icon2.getImage(), 0, 0, null);
-//
-//		// initializes necessary graphic properties
-//		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-//		AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-//		g2d.setComposite(alphaChannel);
-//
-//		// calculates the coordinate where the image is painted
-//		int topLeftX = (bufferedImage.getWidth() - bufferedImage2.getWidth()) / 2;
-//		int topLeftY = (bufferedImage.getHeight() - bufferedImage2.getHeight()) / 2;
-//
-//		// paints the image watermark
-//		g2d.drawImage(bufferedImage2, topLeftX, topLeftY, null);
-//
-//		ImageIO.write(bufferedImage, "png", resultImageFile);
-//		g2d.dispose();
-//
-//		Files.readAllBytes(resultImageFile.toPath());
+		File resultImageFile = new File("/tmp/fodase");
+
+		File origFile = new File("/tmp/source.png");
+		ImageIcon icon = new ImageIcon(origFile.getPath());
+
+		// create BufferedImage object of same width and height as of original image
+		BufferedImage bufferedImage = new BufferedImage(icon.getIconWidth(),
+				icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+
+		// create graphics object and add original image to it
+		Graphics graphics = bufferedImage.getGraphics();
+		graphics.drawImage(icon.getImage(), 0, 0, null);
+
+		File watermarkImageFile = new File("/tmp/watermark.png");
+		ImageIcon icon2 = new ImageIcon(watermarkImageFile.getPath());
+
+		// create BufferedImage object of same width and height as of original image
+		BufferedImage bufferedImage2 = new BufferedImage(icon2.getIconWidth(),
+				icon2.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+
+		// create graphics object and add original image to it
+		Graphics graphics2 = bufferedImage2.getGraphics();
+		graphics2.drawImage(icon2.getImage(), 0, 0, null);
+
+		// initializes necessary graphic properties
+		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+		AlphaComposite alphaChannel = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+		g2d.setComposite(alphaChannel);
+
+		// calculates the coordinate where the image is painted
+		int topLeftX = (bufferedImage.getWidth() - bufferedImage2.getWidth()) / 2;
+		int topLeftY = (bufferedImage.getHeight() - bufferedImage2.getHeight()) / 2;
+
+		// paints the image watermark
+		g2d.drawImage(bufferedImage2, topLeftX, topLeftY, null);
+
+		ImageIO.write(bufferedImage, "png", resultImageFile);
+		g2d.dispose();
+
+		Files.readAllBytes(resultImageFile.toPath());
 
 
 		// FUNCIONA ABAIXO:
@@ -153,78 +153,78 @@ class FotografocomvcApplicationTests {
 
 	@Test
 	void clearTokens(){
-//		BaseUser baseUser1 = BaseUser.builder()
-//				.id(1L)
-//				.username("tester1")
-//				.password("123")
-//				.build();
-//
-//		baseUserRepository.save(baseUser1);
-//
-//		BaseUser baseUser2 = BaseUser.builder()
-//				.id(2L)
-//				.username("tester2")
-//				.password("321")
-//				.build();
-//
-//		baseUserRepository.save(baseUser2);
-//
-//		RefreshToken refreshToken1 = RefreshToken.builder()
-//				.id(1L)
-//				.tokenString("refreshTokenString1")
-//				.baseUser(baseUser1)
-//				.build();
-//
-//		refreshTokenRepository.save(refreshToken1);
-//
-//		RefreshToken refreshToken2 = RefreshToken.builder()
-//				.id(2L)
-//				.tokenString("refreshTokenString2")
-//				.baseUser(baseUser1)
-//				.build();
-//		refreshTokenRepository.save(refreshToken2);
-//
-//		RefreshToken refreshToken3 = RefreshToken.builder()
-//				.id(3L)
-//				.tokenString("refreshTokenString3")
-//				.baseUser(baseUser2)
-//				.build();
-//		refreshTokenRepository.save(refreshToken3);
-//
-//		RefreshToken refreshToken4 = RefreshToken.builder()
-//				.id(4L)
-//				.tokenString("refreshTokenString4")
-//				.build();
-//		refreshTokenRepository.save(refreshToken4);
-//
-//		AccessToken accessToken1 = AccessToken.builder()
-//				.id(1L)
-//				.tokenString("accesTokenString1")
-//				.baseUser(baseUser1)
-//				.build();
-//		accessTokenRepository.save(accessToken1);
-//
-//		AccessToken accessToken2 = AccessToken.builder()
-//				.id(2L)
-//				.tokenString("accesTokenString2")
-//				.baseUser(baseUser2)
-//				.build();
-//		accessTokenRepository.save(accessToken2);
-//
-//		accessTokenService.deleteAllByUserId(baseUser1.getId());
-//		refreshTokenService.deleteAllByUserId(baseUser1.getId());
-//
-//		BaseUser baseUserX = BaseUser.builder()
-//					.id(5L)
-//					.username("tester5")
-//					.password("123")
-//					.build();
-//		baseUserRepository.save(baseUserX);
-//
-//		accessTokenService.deleteAllByUserId(baseUserX.getId());
-//		refreshTokenService.deleteAllByUserId(baseUserX.getId());
-//
-//		System.out.println("tsete");
+		BaseUser baseUser1 = BaseUser.builder()
+				.id(1L)
+				.username("tester1")
+				.password("123")
+				.build();
+
+		baseUserRepository.save(baseUser1);
+
+		BaseUser baseUser2 = BaseUser.builder()
+				.id(2L)
+				.username("tester2")
+				.password("321")
+				.build();
+
+		baseUserRepository.save(baseUser2);
+
+		RefreshToken refreshToken1 = RefreshToken.builder()
+				.id(1L)
+				.tokenString("refreshTokenString1")
+				.baseUser(baseUser1)
+				.build();
+
+		refreshTokenRepository.save(refreshToken1);
+
+		RefreshToken refreshToken2 = RefreshToken.builder()
+				.id(2L)
+				.tokenString("refreshTokenString2")
+				.baseUser(baseUser1)
+				.build();
+		refreshTokenRepository.save(refreshToken2);
+
+		RefreshToken refreshToken3 = RefreshToken.builder()
+				.id(3L)
+				.tokenString("refreshTokenString3")
+				.baseUser(baseUser2)
+				.build();
+		refreshTokenRepository.save(refreshToken3);
+
+		RefreshToken refreshToken4 = RefreshToken.builder()
+				.id(4L)
+				.tokenString("refreshTokenString4")
+				.build();
+		refreshTokenRepository.save(refreshToken4);
+
+		AccessToken accessToken1 = AccessToken.builder()
+				.id(1L)
+				.tokenString("accesTokenString1")
+				.baseUser(baseUser1)
+				.build();
+		accessTokenRepository.save(accessToken1);
+
+		AccessToken accessToken2 = AccessToken.builder()
+				.id(2L)
+				.tokenString("accesTokenString2")
+				.baseUser(baseUser2)
+				.build();
+		accessTokenRepository.save(accessToken2);
+
+		accessTokenService.deleteAllByUserId(baseUser1.getId());
+		refreshTokenService.deleteAllByUserId(baseUser1.getId());
+
+		BaseUser baseUserX = BaseUser.builder()
+					.id(5L)
+					.username("tester5")
+					.password("123")
+					.build();
+		baseUserRepository.save(baseUserX);
+
+		accessTokenService.deleteAllByUserId(baseUserX.getId());
+		refreshTokenService.deleteAllByUserId(baseUserX.getId());
+
+		System.out.println("tsete");
 
 
 //		List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUser1.getId());

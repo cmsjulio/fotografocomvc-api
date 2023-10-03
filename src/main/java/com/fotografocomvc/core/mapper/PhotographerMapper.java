@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+import static java.lang.String.valueOf;
+
 @Component
 public class PhotographerMapper {
     public PhotographerResponse photographerToResponse (Photographer photographer){
@@ -43,7 +45,7 @@ public class PhotographerMapper {
                 .name(photographer.getName())
                 .aboutMe(photographer.getAboutMe())
                 .phone(photographer.getPhone())
-                .gender(photographer.getGender().toString())
+                .gender(valueOf(photographer.getGender()))
                 .bio(photographer.getBio())
                 .build();
     }

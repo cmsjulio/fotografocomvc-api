@@ -25,6 +25,7 @@ import java.util.Map;
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {BusinessException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorMessage handleBusinessException(RuntimeException ex, WebRequest request) {
         return new ErrorMessage(
                 HttpStatus.CONFLICT.value(),

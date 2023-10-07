@@ -23,24 +23,24 @@ public class ImageController {
     @Autowired
     ImageRepository imageRepository;
 
-    @PostMapping()
-    public ResponseEntity<ImageUploadResponse> uploadImage(@RequestParam("image") MultipartFile file)
-            throws Exception {
-
-        Image watermarkImage = imageRepository.findByName("watermark.png").get();
-        byte[] watermarkBytes = ImageUtility.decompressImage(watermarkImage.getOriginalImage());
-        byte[] resultWatermarkedImageInBytes = ImageUtility.addImageWatermark(watermarkBytes, file.getBytes());
-
-        imageRepository.save(Image.builder()
-                .name(file.getOriginalFilename())
-                .formatType(file.getContentType())
-//                .originalImage(ImageUtility.compressImage(file.getBytes()))
-                .originalImage(ImageUtility.compressImage(resultWatermarkedImageInBytes))
-                .build());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ImageUploadResponse("Image uploaded successfully: " +
-                        file.getOriginalFilename()));
-    }
+//    @PostMapping()
+//    public ResponseEntity<ImageUploadResponse> uploadImage(@RequestParam("image") MultipartFile file)
+//            throws Exception {
+//
+//        Image watermarkImage = imageRepository.findByName("watermark.png").get();
+//        byte[] watermarkBytes = ImageUtility.decompressImage(watermarkImage.getOriginalImage());
+//        byte[] resultWatermarkedImageInBytes = ImageUtility.addImageWatermark(watermarkBytes, file.getBytes());
+//
+//        imageRepository.save(Image.builder()
+//                .name(file.getOriginalFilename())
+//                .formatType(file.getContentType())
+////                .originalImage(ImageUtility.compressImage(file.getBytes()))
+//                .originalImage(ImageUtility.compressImage(resultWatermarkedImageInBytes))
+//                .build());
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(new ImageUploadResponse("Image uploaded successfully: " +
+//                        file.getOriginalFilename()));
+//    }
 
     @GetMapping(path = {"/details/{name}"})
     public Image getImageDetails(@PathVariable("name") String name) throws IOException {

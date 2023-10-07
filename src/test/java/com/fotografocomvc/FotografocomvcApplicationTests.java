@@ -4,6 +4,7 @@ import com.fotografocomvc.domain.model.*;
 import com.fotografocomvc.domain.model.Image;
 import com.fotografocomvc.domain.repository.*;
 import com.fotografocomvc.domain.service.AccessTokenServiceImpl;
+import com.fotografocomvc.domain.service.PhotographerService;
 import com.fotografocomvc.domain.service.RefreshTokenServiceImpl;
 import com.fotografocomvc.domain.util.ImageUtility;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,12 @@ class FotografocomvcApplicationTests {
 
 	@Autowired
 	private PhotographerRepository photographerRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
+
+	@Autowired
+	private PhotographerService photographerService;
 
 	@Autowired
 	private BaseUserRepository baseUserRepository;
@@ -230,6 +237,25 @@ class FotografocomvcApplicationTests {
 //		List<RefreshToken> refreshTokenList = refreshTokenRepository.findAllByBaseUserId(baseUser1.getId());
 //		refreshTokenRepository.deleteAll(refreshTokenList);
 
+
+	}
+
+	@Test
+	void locationMappingToPhotographer(){
+		Photographer photographer = photographerRepository.findById(1L).get();
+		Location location = Location.builder()
+						.id(1L)
+								.locationCity("Reio de janei")
+										.locationState("RJ")
+												.build();
+
+		location = locationRepository.save(location);
+
+		photographer.setLocation(location);
+
+		photographerService.update(photographer);
+
+		System.out.println(photographer.getLocation());
 
 	}
 

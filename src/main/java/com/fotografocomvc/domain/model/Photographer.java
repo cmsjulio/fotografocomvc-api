@@ -40,6 +40,16 @@ public class Photographer {
     @JoinColumn(name = "ID_BASEUSER_FK", referencedColumnName = "ID_BASEUSER")
     private BaseUser baseUser;
 
-    //OneToOne - BaseUser (nullable=false)
+    @Column(name = "NM_SHORT_INFO")
+    private String shortInfo;
+
+    @ManyToOne
+    @JoinColumn(name = "FK_LOCATION", referencedColumnName = "ID_LOCATION")
+    private Location location;
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ID_IMAGE_FK", referencedColumnName = "ID_IMAGE")
+    private Image profilePic;
 
 }

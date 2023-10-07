@@ -1,17 +1,23 @@
 package com.fotografocomvc.api.http.resources.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ImageUploadResponse {
-    private String message;
 
-    public ImageUploadResponse(String message) {
-        this.message = message;
-    }
+    @Schema(description = "Image's id")
+    private Long id;
 
-    public String getMessage() {
-        return message;
-    }
+    @Schema(description = "Image's name")
+    private String name;
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+
+
 }

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -30,4 +32,7 @@ public class Image {
 
     @Column(name = "BT_WATERMARKED_IMAGE", nullable = true, length = 100000)
     private byte[] watermarkedImage;
+
+    @OneToMany(mappedBy = "profilePic")
+    private List<Photographer> photographer;
 }

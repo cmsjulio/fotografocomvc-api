@@ -3,6 +3,7 @@ package com.fotografocomvc.api.http.resources.request;
 import com.fotografocomvc.domain.model.enums.Gender;
 import com.fotografocomvc.domain.model.enums.RolesAvaliable;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,4 +39,7 @@ public class RegisterPhotographerRequest {
 
     @Schema(description = "Photographer's aboutMe")
     private String aboutMe;
+
+    @Schema(description = "Photographer's location")
+    private Long locationId;
 }

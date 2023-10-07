@@ -12,9 +12,11 @@ import com.fotografocomvc.domain.exception.BusinessException;
 import com.fotografocomvc.domain.exception.TokenRefreshException;
 import com.fotografocomvc.domain.model.*;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
+import com.fotografocomvc.domain.repository.ImageRepository;
 import com.fotografocomvc.domain.repository.RoleRepository;
 import com.fotografocomvc.domain.service.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,22 +28,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.fotografocomvc.api.security.SecurityConstants.ACCESS_TOKEN_EXPIRATION;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    private AuthenticationManager authenticationManager;
-    private BaseUserRepository baseUserRepository;
-    private RoleRepository roleRepository;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final  BaseUserRepository baseUserRepository;
+    private final  RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    private JwtManager jwtManager;
+    private final  JwtManager jwtManager;
 
-    private RefreshTokenServiceImpl refreshTokenServiceImpl;
+    private final RefreshTokenServiceImpl refreshTokenServiceImpl;
 
     private final BaseUserService baseUserService;
 
@@ -54,20 +58,11 @@ public class AuthController {
     private final AccessTokenServiceImpl accessTokenServiceImpl;
 
     private final PhotographerMapper photographerMapper;
-    public AuthController(AuthenticationManager authenticationManager, BaseUserRepository baseUserRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtManager jwtManager, RefreshTokenServiceImpl refreshTokenServiceImpl, BaseUserService baseUserService, CustomerService customerService, PhotographerService photographerService, CustomerMapper customerMapper, AccessTokenServiceImpl accessTokenServiceImpl, PhotographerMapper photographerMapper) {
-        this.authenticationManager = authenticationManager;
-        this.baseUserRepository = baseUserRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtManager = jwtManager;
-        this.refreshTokenServiceImpl = refreshTokenServiceImpl;
-        this.baseUserService = baseUserService;
-        this.customerService = customerService;
-        this.photographerService = photographerService;
-        this.customerMapper = customerMapper;
-        this.accessTokenServiceImpl = accessTokenServiceImpl;
-        this.photographerMapper = photographerMapper;
-    }
+
+    private final ImageRepository imageRepository;
+
+    private final LocationService locationService;
+
 
     @PostMapping("/login")
 //    @CrossOrigin(origins = "http://localhost:4200")
@@ -160,6 +155,15 @@ public class AuthController {
                 .phone(registerPhotographerRequest.getPhone())
                 .aboutMe(registerPhotographerRequest.getAboutMe())
                 .build();
+
+
+        if (imageRepository.findById(1L).isPresent()){
+            if (Objects.equals(imageRepository.findById(1L).get().getName(), "defaultPic.jpg")){
+            photographer.setProfilePic(imageRepository.findById(1L).get());
+        }}
+
+        if (registerPhotographerRequest.getLocationId()!=null && locationService.findById(registerPhotographerRequest.getLocationId()).isPresent()){
+            photographer.setLocation(locationService.findById(registerPhotographerRequest.getLocationId()).get());}
 
         Photographer savedPhotographer = photographerService.save(photographer);
 

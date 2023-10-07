@@ -36,6 +36,11 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ACCESS = {
             "/image/**",
+            "/auth/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/location/**",
+            "/photographer/public/**"
     };
 
     @Bean
@@ -49,9 +54,6 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers(PUBLIC_ACCESS).permitAll()
                         .anyRequest().authenticated()
                 )

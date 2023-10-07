@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class PhotographerRequest {
 
     @Schema(description = "Photographer's name")
-    @NotNull(message = "Photographer's name cannot be null")
     private String name;
 
     @Schema(description = "Photographer's gender")
@@ -29,4 +28,10 @@ public class PhotographerRequest {
 
     @Schema(description = "Photographer's aboutMe")
     private String aboutMe;
+
+    @Schema(description = "Photographer's aboutMe")
+    private String shortInfo;
+
+    @Schema(description = "Photographer's location")
+    private Long locationId;
 }

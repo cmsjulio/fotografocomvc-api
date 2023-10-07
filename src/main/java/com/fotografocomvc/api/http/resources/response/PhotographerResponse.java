@@ -1,5 +1,7 @@
 package com.fotografocomvc.api.http.resources.response;
 
+import com.fotografocomvc.domain.model.Image;
+import com.fotografocomvc.domain.model.Location;
 import com.fotografocomvc.domain.model.Role;
 import com.fotografocomvc.domain.model.enums.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -34,6 +36,17 @@ public class PhotographerResponse {
     @Schema(description = "Photographer's 'about me'")
     private String aboutMe;
 
+    @Schema(description = "Photographer's 'short info'")
+    private String shortInfo;
+
     @Schema(description = "Photographer's roles")
     private List<Role> roles;
+
+    @Schema(description = "Photographer's location")
+    private Location location;
+
+    @Schema(description = "Photographer's profile picture")
+    private Long profilePicImageId;
+
+
 }

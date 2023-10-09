@@ -52,4 +52,7 @@ public class Photographer {
     @JoinColumn(name = "ID_IMAGE_FK", referencedColumnName = "ID_IMAGE")
     private Image profilePic;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ID_GALLERY_FK", referencedColumnName = "ID_GALLERY")
+    private Gallery gallery;
 }

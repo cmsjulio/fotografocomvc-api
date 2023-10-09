@@ -12,11 +12,14 @@ import com.fotografocomvc.domain.exception.BusinessException;
 import com.fotografocomvc.domain.exception.TokenRefreshException;
 import com.fotografocomvc.domain.model.*;
 import com.fotografocomvc.domain.repository.BaseUserRepository;
+import com.fotografocomvc.domain.repository.GalleryRepository;
 import com.fotografocomvc.domain.repository.ImageRepository;
 import com.fotografocomvc.domain.repository.RoleRepository;
 import com.fotografocomvc.domain.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,11 +42,11 @@ import static com.fotografocomvc.api.security.SecurityConstants.ACCESS_TOKEN_EXP
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final  BaseUserRepository baseUserRepository;
-    private final  RoleRepository roleRepository;
+    private final BaseUserRepository baseUserRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private final  JwtManager jwtManager;
+    private final JwtManager jwtManager;
 
     private final RefreshTokenServiceImpl refreshTokenServiceImpl;
 
@@ -63,12 +66,13 @@ public class AuthController {
 
     private final LocationService locationService;
 
+    private final GalleryRepository galleryRepository;
 
     @PostMapping("/login")
-//    @CrossOrigin(origins = "http://localhost:4200")
-    private ResponseEntity<AuthResponse> login (@RequestBody LoginRequest loginRequest){
+    // @CrossOrigin(origins = "http://localhost:4200")
+    private ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getUsername(),loginRequest.getPassword()));
+                loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
@@ -83,14 +87,14 @@ public class AuthController {
         accessTokenServiceImpl.createToken(accessToken);
 
         RefreshToken refreshToken = RefreshToken.builder()
-                        .tokenString(jwtManager.generateRefreshJWT(authentication))
-                        .baseUser(baseUser)
-                        .build();
+                .tokenString(jwtManager.generateRefreshJWT(authentication))
+                .baseUser(baseUser)
+                .build();
         refreshTokenServiceImpl.createToken(refreshToken);
 
-//        baseUser.setAccessToken(accessToken);
-//        baseUser.setRefreshToken(refreshToken);
-//        baseUserService.update(baseUser);
+        // baseUser.setAccessToken(accessToken);
+        // baseUser.setRefreshToken(refreshToken);
+        // baseUserService.update(baseUser);
 
         // TODO refatorar AuthResponse
         AuthResponse authResponse = new AuthResponse();
@@ -99,15 +103,15 @@ public class AuthController {
         authResponse.setRefreshToken(refreshToken.getTokenString());
         authResponse.setRoles(baseUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
 
-
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/register-customer")
-//    @CrossOrigin(origins = "http://localhost:4200")
-    private ResponseEntity<RegisterCustomerResponse> registerCustomer (@RequestBody RegisterCustomerRequest registerCustomerRequest){
-        if (baseUserService.existsByUsername(registerCustomerRequest.getUsername())){
+    // @CrossOrigin(origins = "http://localhost:4200")
+    private ResponseEntity<RegisterCustomerResponse> registerCustomer(
+            @RequestBody RegisterCustomerRequest registerCustomerRequest) {
+        if (baseUserService.existsByUsername(registerCustomerRequest.getUsername())) {
             throw new BusinessException("Username is taken");
         }
 
@@ -117,7 +121,7 @@ public class AuthController {
 
         Role role = roleRepository.findByName("CUSTOMER").get();
         baseUser.setRoles(Collections.singletonList(role));
-        BaseUser savedBaseUser =  baseUserService.save(baseUser);
+        BaseUser savedBaseUser = baseUserService.save(baseUser);
 
         Customer customer = Customer.builder()
                 .baseUser(savedBaseUser)
@@ -133,9 +137,10 @@ public class AuthController {
     }
 
     @PostMapping("/register-photographer")
-//    @CrossOrigin(origins = "http://localhost:4200")
-    private ResponseEntity<RegisterPhotographerResponse> registerPhotographer (@Valid @RequestBody RegisterPhotographerRequest registerPhotographerRequest){
-        if (baseUserService.existsByUsername(registerPhotographerRequest.getUsername())){
+    // @CrossOrigin(origins = "http://localhost:4200")
+    private ResponseEntity<RegisterPhotographerResponse> registerPhotographer(
+            @Valid @RequestBody RegisterPhotographerRequest registerPhotographerRequest) {
+        if (baseUserService.existsByUsername(registerPhotographerRequest.getUsername())) {
             throw new BusinessException("Username is taken");
         }
 
@@ -145,7 +150,10 @@ public class AuthController {
 
         Role role = roleRepository.findByName("PHOTOGRAPHER").get();
         baseUser.setRoles(Collections.singletonList(role));
-        BaseUser savedBaseUser =  baseUserService.save(baseUser);
+        BaseUser savedBaseUser = baseUserService.save(baseUser);
+
+        Gallery gallery = new Gallery();
+        Gallery savedGallery = galleryRepository.save(gallery);
 
         Photographer photographer = Photographer.builder()
                 .baseUser(savedBaseUser)
@@ -154,27 +162,31 @@ public class AuthController {
                 .bio(registerPhotographerRequest.getBio())
                 .phone(registerPhotographerRequest.getPhone())
                 .aboutMe(registerPhotographerRequest.getAboutMe())
+                .gallery(savedGallery)
                 .build();
 
+        if (imageRepository.findById(1L).isPresent()) {
+            if (Objects.equals(imageRepository.findById(1L).get().getName(), "defaultPic.jpg")) {
+                photographer.setProfilePic(imageRepository.findById(1L).get());
+            }
+        }
 
-        if (imageRepository.findById(1L).isPresent()){
-            if (Objects.equals(imageRepository.findById(1L).get().getName(), "defaultPic.jpg")){
-            photographer.setProfilePic(imageRepository.findById(1L).get());
-        }}
-
-        if (registerPhotographerRequest.getLocationId()!=null && locationService.findById(registerPhotographerRequest.getLocationId()).isPresent()){
-            photographer.setLocation(locationService.findById(registerPhotographerRequest.getLocationId()).get());}
+        if (registerPhotographerRequest.getLocationId() != null
+                && locationService.findById(registerPhotographerRequest.getLocationId()).isPresent()) {
+            photographer.setLocation(locationService.findById(registerPhotographerRequest.getLocationId()).get());
+        }
 
         Photographer savedPhotographer = photographerService.save(photographer);
 
-        RegisterPhotographerResponse registerPhotographerResponse = photographerMapper.photographerToRegisterResponse(savedPhotographer);
+        RegisterPhotographerResponse registerPhotographerResponse = photographerMapper
+                .photographerToRegisterResponse(savedPhotographer);
 
         return new ResponseEntity<>(registerPhotographerResponse, HttpStatus.CREATED);
 
     }
 
     @PostMapping("/refreshtoken")
-//    @CrossOrigin(origins = "http://localhost:4200")
+    // @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
         // TODO checar validação, apagar token atual e gerar novo
         String requestRefreshToken = request.getRefreshToken();
@@ -191,8 +203,3 @@ public class AuthController {
     }
 
 }
-
-
-
-
-

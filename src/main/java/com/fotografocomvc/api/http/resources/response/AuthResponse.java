@@ -17,10 +17,11 @@ import java.util.List;
 public class AuthResponse {
     private String email;
     private List<String> roles;
-
     private String accessToken;
     private String tokenType = "Bearer ";
     private String refreshToken;
+    private Long photographerId;
+    private Long customerId;
 
     public AuthResponse(String accessToken) {
         this.accessToken = accessToken;

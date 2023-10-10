@@ -3,7 +3,9 @@ package com.fotografocomvc.api.controller;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.fotografocomvc.api.http.resources.response.ImageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -116,13 +118,13 @@ public class PhotographerController {
     }
 
     @Operation(tags = { "Photographer" }, description = "Add image to own photographer's gallery")
-    @PostMapping(value = "/private/gallery/addImageToGallery", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,
+    @PostMapping(value = "/private/gallery", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<PhotographerResponse> addImageToGallery(Authentication authentication,
-            @RequestPart("image") MultipartFile file,
-            @RequestPart("imageDescription") String imageDescription) throws Exception {
+            @RequestPart(value = "image") MultipartFile file,
+            @RequestPart(value = "imageDescription") String imageDescription) throws Exception {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
         Photographer photographer = photographerService.findByBaseUser(baseUser);
@@ -141,6 +143,24 @@ public class PhotographerController {
         return ResponseEntity.ok(response);
 
     }
+
+
+    @Operation(tags = { "Photographer" }, description = "Find all images from photographer's gallery")
+    @GetMapping("/public/gallery/{photographerId}")
+    @ResponseBody
+    public ResponseEntity<List<ImageResponse>> findAllImagesByGallery(@Valid @PathVariable("photographerId") Long photographerId) {
+        Photographer photographer = photographerService.findById(photographerId);
+        Long galleryId = photographer.getGallery().getId();
+
+        List<Image> imageList = imageRepository.findAllByGalleryId(galleryId);
+        List<ImageResponse> imageResponseList = imageList.stream().map((image -> ImageResponse.builder()
+                .id(image.getId())
+                .name(image.getName())
+                .description(image.getDescription())
+                .build())).collect(Collectors.toList());
+        return ResponseEntity.ok(imageResponseList);
+    }
+
 
     @PutMapping(value = "/private/updateProfilePic", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @SecurityRequirement(name = "Bearer Authentication")
@@ -166,15 +186,16 @@ public class PhotographerController {
     }
 
     @GetMapping(path = { "/public/getImageDetails/{id}" })
-    public Image getImageDetails(@PathVariable("id") Long id) throws IOException {
+    public ResponseEntity<Image> getImageDetails(@PathVariable("id") Long id) throws IOException {
 
         final Optional<Image> dbImage = imageRepository.findById(id);
 
-        return Image.builder()
+        return ResponseEntity.status(HttpStatus.OK).body(Image.builder()
                 .id(id)
                 .name(dbImage.get().getName())
                 .formatType(dbImage.get().getFormatType())
-                .originalImage(ImageUtility.decompressImage(dbImage.get().getOriginalImage())).build();
+                .description(dbImage.get().getDescription())
+                .originalImage(ImageUtility.decompressImage(dbImage.get().getOriginalImage())).build());
     }
 
     @GetMapping(path = { "/public/getImage/{id}" })

@@ -76,7 +76,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
-        // TODO excluir tokens do usuário se existirem AQUI NESTA LINHA
+
         accessTokenServiceImpl.deleteAllByUserId(baseUser.getId());
         refreshTokenServiceImpl.deleteAllByUserId(baseUser.getId());
 
@@ -92,6 +92,7 @@ public class AuthController {
                 .build();
         refreshTokenServiceImpl.createToken(refreshToken);
 
+
         // baseUser.setAccessToken(accessToken);
         // baseUser.setRefreshToken(refreshToken);
         // baseUserService.update(baseUser);
@@ -102,6 +103,14 @@ public class AuthController {
         authResponse.setAccessToken(accessToken.getTokenString());
         authResponse.setRefreshToken(refreshToken.getTokenString());
         authResponse.setRoles(baseUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+
+        if (baseUser.getPhotographer()!=null){
+            authResponse.setPhotographerId(baseUser.getPhotographer().getId());
+        }
+
+        if (baseUser.getCustomer()!=null){
+            authResponse.setCustomerId(baseUser.getCustomer().getId());
+        }
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
 

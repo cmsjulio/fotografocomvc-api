@@ -170,6 +170,7 @@ public class PhotographerController {
     }
 
 
+    @Operation(tags = { "Photographer" }, description = "Update own photographer's profile pic")
     @PutMapping(value = "/private/updateProfilePic", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<PhotographerResponse> updateProfilePicture(Authentication authentication,
@@ -193,6 +194,7 @@ public class PhotographerController {
                 .body(photographerMapper.photographerToResponse(updatedPhotographer));
     }
 
+    @Operation(tags = { "Photographer" }, description = "Get image details")
     @GetMapping(path = { "/public/getImageDetails/{id}" })
     public ResponseEntity<Image> getImageDetails(@PathVariable("id") Long id) throws IOException {
 
@@ -206,6 +208,7 @@ public class PhotographerController {
                 .originalImage(ImageUtility.decompressImage(dbImage.get().getOriginalImage())).build());
     }
 
+    @Operation(tags = { "Photographer" }, description = "Get image by id")
     @GetMapping(path = { "/public/getImage/{id}" })
     public ResponseEntity<byte[]> getImage(@PathVariable("id") Long id) throws IOException {
 

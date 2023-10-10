@@ -20,7 +20,7 @@ public class FotografocomvcApplication {
 	public OpenAPI openAPI(@Value("${springdoc.version}") String appVersion) {
 		return new OpenAPI()
 				.components(new Components())
-				.info(new Info().title("Distribuição de Vagas API").version(appVersion));
+				.info(new Info().title("fotografocomvc-api").version(appVersion));
 	}
 
 }

@@ -67,6 +67,14 @@ public class PhotographerController {
         return ResponseEntity.ok(photographerResponseList);
     }
 
+    @Operation(tags = { "Photographer" }, description = "Find photographer by id")
+    @GetMapping("/public/{photographerId}")
+    @ResponseBody
+    public ResponseEntity<PhotographerResponse> findPhotographerById(@PathVariable ("photographerId") Long photographerId) {
+        Photographer photographer = photographerService.findById(photographerId);
+        PhotographerResponse photographerResponse = photographerMapper.photographerToResponse(photographer);
+        return ResponseEntity.ok(photographerResponse);
+    }
     @Operation(tags = { "Photographer" }, description = "Findall photographer by location id")
     @GetMapping("/public/findAllByLocationId/{locationId}")
     @ResponseBody

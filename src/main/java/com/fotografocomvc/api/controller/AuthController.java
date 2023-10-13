@@ -171,6 +171,7 @@ public class AuthController {
                 .bio(registerPhotographerRequest.getBio())
                 .phone(registerPhotographerRequest.getPhone())
                 .aboutMe(registerPhotographerRequest.getAboutMe())
+                .shortInfo(registerPhotographerRequest.getShortInfo())
                 .gallery(savedGallery)
                 .build();
 

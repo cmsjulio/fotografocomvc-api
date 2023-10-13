@@ -42,4 +42,7 @@ public class RegisterPhotographerRequest {
 
     @Schema(description = "Photographer's location")
     private Long locationId;
+    
+    @Schema(description = "Photographer's short info")
+    private String shortInfo;
 }

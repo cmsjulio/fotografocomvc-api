@@ -1,7 +1,15 @@
 package com.fotografocomvc.domain.model;
 
-import com.fotografocomvc.domain.model.enums.Gender;
-import jakarta.persistence.*;
+import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,8 +28,9 @@ public class Gallery {
     @Column(name = "ID_GALLERY", nullable = false, unique = true)
     private Long id;
 
-    //OneToOne  - Photographer (nullable=false)
+    @OneToMany(mappedBy = "gallery")
+    private List<Image> image;
 
-    //OneToMany - Photo
-
+    @OneToOne(mappedBy = "gallery")
+    private Photographer photographer;
 }

@@ -31,5 +31,11 @@ public class LocationController {
         return ResponseEntity.ok(locationList);
     }
 
-    // updateByPhotographer - get the logged in photographer and update their profile;
+    @Operation(tags = { "Location" }, description = "Find location by id")
+    @GetMapping("{locationId}")
+    @ResponseBody
+    public ResponseEntity<Location> findLocationById (@PathVariable ("locationId") Long locationId) {
+        Location location =  locationService.findById(locationId).get();
+        return ResponseEntity.ok(location);
+    }
 }

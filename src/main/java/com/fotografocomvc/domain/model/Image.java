@@ -35,4 +35,12 @@ public class Image {
 
     @OneToMany(mappedBy = "profilePic")
     private List<Photographer> photographer;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ID_GALLERY_FK", referencedColumnName = "ID_GALLERY")
+    private Gallery gallery;
+
+    @Column(name = "NM_DESCRIPTION")
+    private String description;
 }
+

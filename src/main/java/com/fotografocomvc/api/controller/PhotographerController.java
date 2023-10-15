@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.fotografocomvc.api.http.resources.response.ImageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fotografocomvc.api.http.resources.request.ImageDescriptionRequest;
 import com.fotografocomvc.api.http.resources.request.PhotographerRequest;
+import com.fotografocomvc.api.http.resources.response.ImageResponse;
 import com.fotografocomvc.api.http.resources.response.PhotographerResponse;
 import com.fotografocomvc.core.mapper.PhotographerMapper;
 import com.fotografocomvc.domain.model.BaseUser;
@@ -70,11 +72,13 @@ public class PhotographerController {
     @Operation(tags = { "Photographer" }, description = "Find photographer by id")
     @GetMapping("/public/{photographerId}")
     @ResponseBody
-    public ResponseEntity<PhotographerResponse> findPhotographerById(@PathVariable ("photographerId") Long photographerId) {
+    public ResponseEntity<PhotographerResponse> findPhotographerById(
+            @PathVariable("photographerId") Long photographerId) {
         Photographer photographer = photographerService.findById(photographerId);
         PhotographerResponse photographerResponse = photographerMapper.photographerToResponse(photographer);
         return ResponseEntity.ok(photographerResponse);
     }
+
     @Operation(tags = { "Photographer" }, description = "Findall photographer by location id")
     @GetMapping("/public/findAllByLocationId/{locationId}")
     @ResponseBody
@@ -152,11 +156,11 @@ public class PhotographerController {
 
     }
 
-
     @Operation(tags = { "Photographer" }, description = "Find all images from photographer's gallery")
     @GetMapping("/public/gallery/{photographerId}")
     @ResponseBody
-    public ResponseEntity<List<ImageResponse>> findAllImagesByGallery(@Valid @PathVariable("photographerId") Long photographerId) {
+    public ResponseEntity<List<ImageResponse>> findAllImagesByGallery(
+            @Valid @PathVariable("photographerId") Long photographerId) {
         Photographer photographer = photographerService.findById(photographerId);
         Long galleryId = photographer.getGallery().getId();
 
@@ -168,7 +172,6 @@ public class PhotographerController {
                 .build())).collect(Collectors.toList());
         return ResponseEntity.ok(imageResponseList);
     }
-
 
     @Operation(tags = { "Photographer" }, description = "Update own photographer's profile pic")
     @PutMapping(value = "/private/updateProfilePic", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
@@ -220,4 +223,45 @@ public class PhotographerController {
                 .body(ImageUtility.decompressImage(dbImage.get().getOriginalImage()));
     }
 
+    @PutMapping(path = { "/private/updateImageDescription/{imageId}" })
+    @Operation(tags = { "Photographer" }, description = "Update image's description")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ImageDescriptionRequest> updateImageDescription(Authentication authentication,
+            @RequestBody ImageDescriptionRequest imageDescriptionRequest,
+            @PathVariable(name = "imageId") Long imageId) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
+        Photographer photographer = photographerService.findByBaseUser(baseUser);
+
+        Image requestedImage = imageRepository.findById(imageId).get();
+
+        if (photographer.getGallery() == requestedImage.getGallery()) {
+
+            requestedImage.setDescription(imageDescriptionRequest.getImageDescription());
+            imageRepository.save(requestedImage);
+        }
+
+        return ResponseEntity.ok().body(imageDescriptionRequest);
+
+    }
+
+    @DeleteMapping(path = { "/private/deleteOwnImageFromGallery/{imageId}" })
+    @Operation(tags = { "Photographer" }, description = "Delete image from own gallery")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ImageResponse> deleteImageFromOwnGallery(Authentication authentication,
+            @PathVariable(name = "imageId") Long imageId) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        BaseUser baseUser = baseUserService.findByUsername(userDetails.getUsername()).get();
+        Photographer photographer = photographerService.findByBaseUser(baseUser);
+
+        Image imageToBeDeleted = imageRepository.findById(imageId).get();
+        ImageResponse reponse = new ImageResponse();
+
+        if (photographer.getGallery() == imageToBeDeleted.getGallery()) {
+            imageRepository.deleteById(imageId);
+        }
+
+        return ResponseEntity.ok().body(reponse);
+
+    }
 }

@@ -92,7 +92,6 @@ public class AuthController {
                 .build();
         refreshTokenServiceImpl.createToken(refreshToken);
 
-
         // baseUser.setAccessToken(accessToken);
         // baseUser.setRefreshToken(refreshToken);
         // baseUserService.update(baseUser);
@@ -104,11 +103,11 @@ public class AuthController {
         authResponse.setRefreshToken(refreshToken.getTokenString());
         authResponse.setRoles(baseUser.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
 
-        if (baseUser.getPhotographer()!=null){
+        if (baseUser.getPhotographer() != null) {
             authResponse.setPhotographerId(baseUser.getPhotographer().getId());
         }
 
-        if (baseUser.getCustomer()!=null){
+        if (baseUser.getCustomer() != null) {
             authResponse.setCustomerId(baseUser.getCustomer().getId());
         }
 
@@ -173,18 +172,8 @@ public class AuthController {
                 .aboutMe(registerPhotographerRequest.getAboutMe())
                 .shortInfo(registerPhotographerRequest.getShortInfo())
                 .gallery(savedGallery)
+                .location(locationService.findById(1L).get()) // todo fotógrafo associado a minas gerais, de início
                 .build();
-
-        if (imageRepository.findById(1L).isPresent()) {
-            if (Objects.equals(imageRepository.findById(1L).get().getName(), "defaultPic.jpg")) {
-                photographer.setProfilePic(imageRepository.findById(1L).get());
-            }
-        }
-
-        if (registerPhotographerRequest.getLocationId() != null
-                && locationService.findById(registerPhotographerRequest.getLocationId()).isPresent()) {
-            photographer.setLocation(locationService.findById(registerPhotographerRequest.getLocationId()).get());
-        }
 
         Photographer savedPhotographer = photographerService.save(photographer);
 

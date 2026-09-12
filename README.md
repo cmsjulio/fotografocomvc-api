@@ -222,3 +222,4 @@ mvn test
 - **Institution:** Pontifícia Universidade Católica de Minas Gerais (PUC Minas Virtual)
 - **Program:** Post-graduate Specialization in Software Engineering (*Pós-graduação Lato Sensu em Engenharia de Software*)
 - **Year:** 2023
+
